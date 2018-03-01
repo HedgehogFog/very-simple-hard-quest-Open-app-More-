@@ -16,6 +16,7 @@
 
 package com.example;
 
+import com.example.data.DataManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,10 @@ public class Main {
   private String dbUrl;
 
   @Autowired
-  private DataSource dataSource;
+  public DataSource dataSource;
 
   public static void main(String[] args) throws Exception {
+
     SpringApplication.run(Main.class, args);
   }
 
@@ -55,6 +57,7 @@ public class Main {
 
   @RequestMapping("/db")
   String db(Map<String, Object> model) {
+
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
       stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
@@ -74,6 +77,42 @@ public class Main {
     }
   }
 
+  @RequestMapping("/dbUser")
+  String dbUser(Map<String, Object> model) {
+    DataManager.dataSource = dataSource;
+
+    try (Connection connection = dataSource.getConnection()) {
+      Statement stmt = connection.createStatement();
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (" +
+              "id INT NOT NULL AUTO_INCREMENT," +
+              "username VARCHAR(50) NOT NULL," +
+              "password CHAR(50) NOT NULL)," +
+              "role INT NOT NULL");
+
+
+          ResultSet rs = stmt.executeQuery("SELECT username FROM users");
+          boolean hasUser = false;
+          while (rs.next()){
+            if (rs.getString("username").equals("admin"))
+              hasUser = true;
+          }
+      
+          if (!hasUser)
+            stmt.executeUpdate("INSERT INTO users VALUES ('admin', 'admin', 2)");
+
+
+      // ArrayList<String> output = new ArrayList<String>();
+      // while (rs.next()) {
+        // output.add("Read from DB: " + rs.getTimestamp("tick"));
+      // }
+
+      // model.put("records", output);
+      return "dbUser";
+    } catch (Exception e) {
+      model.put("message", e.getMessage());
+      return "error";
+    }
+  }
   @Bean
   public DataSource dataSource() throws SQLException {
     if (dbUrl == null || dbUrl.isEmpty()) {
