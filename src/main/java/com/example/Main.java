@@ -87,7 +87,7 @@ public class Main {
               "id INT NOT NULL," +
               "username VARCHAR(50) NOT NULL," +
               "password CHAR(50) NOT NULL)," +
-              "role INT NOT NULL");
+              "role INT NOT NULL);");
 
 
           ResultSet rs = stmt.executeQuery("SELECT username FROM users");
