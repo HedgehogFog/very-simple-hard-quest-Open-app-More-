@@ -84,7 +84,7 @@ public class Main {
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
       stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (" +
-              "id INT NOT NULL AUTO_INCREMENT," +
+              "id INT NOT NULL," +
               "username VARCHAR(50) NOT NULL," +
               "password CHAR(50) NOT NULL)," +
               "role INT NOT NULL");
@@ -98,7 +98,7 @@ public class Main {
           }
       
           if (!hasUser)
-            stmt.executeUpdate("INSERT INTO users VALUES ('admin', 'admin', 2)");
+            stmt.executeUpdate("INSERT INTO users VALUES (0, 'admin', 'admin', 2)");
 
 
       // ArrayList<String> output = new ArrayList<String>();
